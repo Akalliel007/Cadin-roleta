@@ -1,0 +1,38 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Baixar o repositório
+      uses: actions/checkout@v3
+
+    - name: Instalar JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+
+    - name: Instalar Android SDK
+      uses: android-actions/setup-android@v3
+
+    - name: Descompactar projeto
+      run: unzip RoletaApp_Professional.zip -d app
+
+    - name: Dar permissão ao Gradle
+      run: chmod +x app/gradlew
+
+    - name: Compilar APK
+      run: |
+        cd app
+        ./gradlew assembleDebug
+
+    - name: Upload do APK gerado
+      uses: actions/upload-artifact@v3
+      with:
+        name: apk-gerado
+        path: app/app/build/outputs/apk/debug/*.apk
